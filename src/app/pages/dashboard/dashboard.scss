@@ -1,0 +1,320 @@
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.box-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.box-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1f2430;
+}
+
+.box-link {
+  font-size: 0.8rem;
+  color: #3a67ff;
+  text-decoration: none;
+}
+
+.box-link:hover {
+  text-decoration: underline;
+}
+
+.box-count {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.box-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow-y: auto;
+  max-height: 260px;
+}
+
+/* 專案列表 */
+.project-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "name percent" "bar bar";
+  row-gap: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.project-name {
+  grid-area: name;
+  color: #1f2430;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.project-name:hover {
+  text-decoration: underline;
+}
+
+.progress-label {
+  grid-area: percent;
+  color: #888;
+  font-size: 0.75rem;
+}
+
+.progress-track {
+  grid-area: bar;
+  height: 6px;
+  border-radius: 999px;
+  background: #eef0f4;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #3a67ff;
+  border-radius: 999px;
+}
+
+/* 待辦事項 */
+.todo-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  color: #333;
+}
+
+.todo-row.done span {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+/* 行事曆:月曆格 */
+.month-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.weekday-row,
+.week-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekday-cell {
+  text-align: center;
+  font-size: 0.72rem;
+  color: #999;
+  padding-bottom: 0.2rem;
+}
+
+.day-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  border: 1px solid #eef0f4;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #333;
+}
+
+.day-cell.empty {
+  visibility: hidden;
+  border-color: transparent;
+}
+
+.day-cell.has-event {
+  cursor: pointer;
+}
+
+.day-cell.is-today .day-number {
+  background: #3a67ff;
+  color: #fff;
+  border-radius: 50%;
+}
+
+.day-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  line-height: 1;
+}
+
+.event-dot {
+  position: absolute;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #e0473e;
+}
+
+.event-popup {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 160px;
+  background: #1f2430;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  text-align: left;
+}
+
+.event-popup::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1f2430;
+}
+
+.day-cell.has-event:hover .event-popup {
+  display: block;
+}
+
+.event-popup-item + .event-popup-item {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.event-popup-title {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.event-popup-time {
+  display: block;
+  font-size: 0.72rem;
+  color: #c6cad6;
+  margin-top: 0.1rem;
+}
+
+/* 團隊成員 */
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.88rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
+  flex-shrink: 0;
+}
+
+.status-dot.online {
+  background: #33b26f;
+}
+
+.team-name {
+  font-weight: 500;
+  color: #1f2430;
+}
+
+.team-role {
+  color: #999;
+  font-size: 0.78rem;
+  margin-left: auto;
+}
+
+/* 系統提醒 */
+.alert-row {
+  font-size: 0.85rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  border-left: 3px solid #ccc;
+  background: #f7f8fa;
+}
+
+.alert-row.level-urgent {
+  border-left-color: #e0473e;
+  background: #fdf1f0;
+  color: #b13229;
+}
+
+.alert-row.level-warning {
+  border-left-color: #e0a13e;
+  background: #fdf6ea;
+  color: #93641c;
+}
+
+.alert-row.level-info {
+  border-left-color: #3a67ff;
+  background: #eef1ff;
+  color: #2a4bcf;
+}
+
+/* 訊息 */
+.message-row {
+  border-bottom: 1px solid #f0f1f4;
+  padding-bottom: 0.5rem;
+}
+
+.message-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.message-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 0.2rem;
+}
+
+.message-from {
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.message-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #444;
+  line-height: 1.4;
+}
+
+/* 響應式:平板以下改為單欄 */
+@media (max-width: 640px) {
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+}

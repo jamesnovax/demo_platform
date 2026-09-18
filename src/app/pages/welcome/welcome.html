@@ -1,0 +1,16 @@
+<section class="card welcome-card">
+  <h2>專案協作平台</h2>
+  <p>登入以進入你的專案協作空間。</p>
+
+  <form (ngSubmit)="login()">
+    <label>
+      帳號
+      <input type="email" name="email" [(ngModel)]="email" placeholder="you@example.com" required />
+    </label>
+    <label>
+      密碼
+      <input type="password" name="password" [(ngModel)]="password" placeholder="••••••••" required />
+    </label>
+    <button type="submit" class="btn">登入</button>
+  </form>
+</section>

@@ -1,0 +1,535 @@
+<div class="projects-layout">
+
+  <!-- 左側 Project List -->
+  <aside class="project-list-pane">
+
+    <h3 class="pane-title">專案列表</h3>
+
+    <ul class="project-list">
+
+      @for (p of projects; track p.id) {
+
+        <li
+          class="project-item"
+          [class.active]="p.id === selectedId"
+          (click)="select(p.id)"
+        >
+
+          <div class="project-item-line1">
+
+            <span
+              class="status-light"
+              [class]="'light-' + p.level"
+            ></span>
+
+            <span class="project-item-name">
+              {{ p.name }}
+            </span>
+
+          </div>
+
+          <div class="project-item-line2">
+            {{ p.status }}
+          </div>
+
+        </li>
+
+      }
+
+    </ul>
+
+  </aside>
+
+
+  <!-- 右側 Dashboard -->
+  <section class="project-dashboard">
+
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+
+      <div class="dashboard-title">
+
+        <span
+          class="status-light"
+          [class]="'light-' + selectedProject.level"
+        ></span>
+
+        <h2>
+          {{ selectedProject.name }}
+        </h2>
+
+        <span class="dashboard-status">
+          {{ selectedProject.status }}
+        </span>
+
+      </div>
+
+      <!-- 隱藏 Box 還原 -->
+      <div class="hidden-panels-menu">
+
+        <select
+          [disabled]="hiddenPanels.length === 0"
+          (change)="restorePanel($any($event.target).value)"
+        >
+
+          <option value="">
+            顯示隱藏 Box...
+          </option>
+
+          @for (panel of hiddenPanels; track panel.id) {
+
+            <option [value]="panel.id">
+              {{ panel.name }}
+            </option>
+
+          }
+
+        </select>
+
+      </div>
+
+    </header>
+
+
+    <!-- =================================================
+         唯一一個 Dashboard Box Container
+         ================================================= -->
+    <div
+      class="dashboard-grid"
+      cdkDropList
+      [cdkDropListData]="visiblePanelOrder"
+      (cdkDropListDropped)="dropPanel($event)"
+    >
+
+      @for (panelId of visiblePanelOrder; track panelId) {
+
+
+        <!-- =========================
+             任務列表
+             ========================= -->
+        @if (panelId === 'tasks') {
+
+          <section
+            class="panel panel-tasks"
+            cdkDrag
+          >
+
+            <div class="panel-head">
+
+              <div
+                class="drag-handle"
+                cdkDragHandle
+                title="拖曳重新排列"
+              >
+                ⠿
+              </div>
+
+              <h3 class="panel-title">
+                任務列表
+              </h3>
+
+              <div class="panel-actions">
+
+                <button
+                type="button"
+                class="btn btn-add"
+                (click)="openAddModal()"
+              >
+                + 新增任務
+              </button>
+                <button
+                  type="button"
+                  class="panel-btn"
+                  title="上移"
+                  (click)="movePanelUp('tasks')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 19V5"></path>
+                    <path d="M6 11l6-6 6 6"></path>
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="panel-btn"
+                  title="下移"
+                  (click)="movePanelDown('tasks')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14"></path>
+                    <path d="M18 13l-6 6-6-6"></path>
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="panel-btn panel-close"
+                  title="隱藏"
+                  (click)="hidePanel('tasks')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6l12 12"></path>
+                    <path d="M18 6L6 18"></path>
+                  </svg>
+                </button>
+
+              </div>
+
+            </div>
+
+
+    
+
+            <table class="task-table">
+
+              <thead>
+                <tr>
+                  <th>任務</th>
+                  <th>負責人</th>
+                  <th>狀態</th>
+                  <th class="col-actions">操作</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                @for (t of selectedDetail.tasks; track t.id) {
+
+                  <tr>
+
+                    <td>
+                      {{ t.title }}
+                    </td>
+
+                    <td>
+                      {{ t.assignee }}
+                    </td>
+
+                    <td>
+
+                      <span
+                        class="task-status"
+                        [class]="'status-' + t.status"
+                      >
+                        {{ t.status }}
+                      </span>
+
+                    </td>
+
+                    <td class="col-actions">
+
+                      <div class="row-actions">
+
+                        <button
+                          type="button"
+                          class="icon-btn"
+                          title="查看"
+                          (click)="viewTask(t)"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="16"
+                            height="16"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="icon-btn"
+                          title="編輯"
+                          (click)="openEditModal(t)"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="16"
+                            height="16"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M12 20h9" />
+                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                          </svg>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="icon-btn icon-btn-danger"
+                          title="刪除"
+                          (click)="deleteTask(t)"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="16"
+                            height="16"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                            <path d="M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6" />
+                            <path d="M10 11v6" />
+                            <path d="M14 11v6" />
+                          </svg>
+                        </button>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+
+            <div *cdkDragPreview>
+              <div class="panel-drag-preview">
+                任務列表
+              </div>
+            </div>
+
+          </section>
+
+        }
+
+
+        <!-- =========================
+             甘特圖
+             ========================= -->
+        @if (panelId === 'gantt') {
+
+          <section
+            class="panel panel-gantt"
+            cdkDrag
+          >
+
+            <div class="panel-head">
+
+              <div
+                class="drag-handle"
+                cdkDragHandle
+                title="拖曳重新排列"
+              >
+                ⠿
+              </div>
+
+              <h3 class="panel-title">
+                時程甘特圖
+              </h3>
+
+              <div class="panel-actions">
+
+                <button
+                  type="button"
+                  class="panel-btn"
+                  title="上移"
+                  (click)="movePanelUp('gantt')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 19V5"></path>
+                    <path d="M6 11l6-6 6 6"></path>
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="panel-btn"
+                  title="下移"
+                  (click)="movePanelDown('gantt')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14"></path>
+                    <path d="M18 13l-6 6-6-6"></path>
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="panel-btn panel-close"
+                  title="隱藏"
+                  (click)="hidePanel('gantt')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6l12 12"></path>
+                    <path d="M18 6L6 18"></path>
+                  </svg>
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div class="gantt">
+
+              @for (t of selectedDetail.tasks; track t.id) {
+
+                <div class="gantt-row">
+
+                  <span class="gantt-label">
+                    {{ t.title }}
+                  </span>
+
+                  <div class="gantt-track">
+
+                    <div
+                      class="gantt-bar"
+                      [class]="'bar-' + t.status"
+                      [style.left]="taskBarStyle(t).left"
+                      [style.width]="taskBarStyle(t).width"
+                    >
+                      <span class="gantt-bar-tooltip">
+                        {{ t.assignee }} · {{ t.status }}
+                      </span>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+
+            <div *cdkDragPreview>
+              <div class="panel-drag-preview">
+                時程甘特圖
+              </div>
+            </div>
+
+          </section>
+
+        }
+
+
+        <!-- =========================
+             討論節錄
+             ========================= -->
+        @if (panelId === 'discussion') {
+
+          <section
+            class="panel panel-discussion"
+            cdkDrag
+          >
+
+            <div class="panel-head">
+
+              <div
+                class="drag-handle"
+                cdkDragHandle
+                title="拖曳重新排列"
+              >
+                ⠿
+              </div>
+
+              <h3 class="panel-title">
+                討論節錄
+              </h3>
+
+              <div class="panel-actions">
+
+                <button
+                  type="button"
+                  class="panel-btn"
+                  title="上移"
+                  (click)="movePanelUp('discussion')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 19V5"></path>
+                    <path d="M6 11l6-6 6 6"></path>
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="panel-btn"
+                  title="下移"
+                  (click)="movePanelDown('discussion')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14"></path>
+                    <path d="M18 13l-6 6-6-6"></path>
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="panel-btn panel-close"
+                  title="隱藏"
+                  (click)="hidePanel('discussion')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6l12 12"></path>
+                    <path d="M18 6L6 18"></path>
+                  </svg>
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <ul class="discussion-list">
+
+              @for (d of selectedDetail.discussions; track d.id) {
+
+                <li class="discussion-item">
+
+                  <div class="discussion-top">
+
+                    <span class="discussion-author">
+                      {{ d.author }}
+                    </span>
+
+                    <span class="discussion-time">
+                      {{ d.time }}
+                    </span>
+
+                  </div>
+
+                  <p class="discussion-snippet">
+                    {{ d.snippet }}
+                  </p>
+
+                </li>
+
+              }
+
+            </ul>
+
+
+            <div *cdkDragPreview>
+              <div class="panel-drag-preview">
+                討論節錄
+              </div>
+            </div>
+
+          </section>
+
+        }
+
+      }
+
+    </div>
+
+  </section>
+
+</div>
