@@ -1,0 +1,38 @@
+<aside class="project-list-pane">
+
+  <h3 class="pane-title">專案列表</h3>
+
+  <ul class="project-list">
+
+    @for (p of projects; track p.id) {
+
+      <li
+        class="project-item"
+        [class.active]="p.id === selectedId"
+        (click)="select(p.id)"
+      >
+
+        <div class="project-item-line1">
+
+          <span
+            class="status-light"
+            [class]="'light-' + p.level"
+          ></span>
+
+          <span class="project-item-name">
+            {{ p.name }}
+          </span>
+
+        </div>
+
+        <div class="project-item-line2">
+          {{ p.status }}
+        </div>
+
+      </li>
+
+    }
+
+  </ul>
+
+</aside>

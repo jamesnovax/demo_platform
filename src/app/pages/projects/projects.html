@@ -1,48 +1,25 @@
 <div class="projects-layout">
 
-  <!-- 左側 Project List -->
-  <aside class="project-list-pane">
-
-    <h3 class="pane-title">專案列表</h3>
-
-    <ul class="project-list">
-
-      @for (p of projects; track p.id) {
-
-        <li
-          class="project-item"
-          [class.active]="p.id === selectedId"
-          (click)="select(p.id)"
-        >
-
-          <div class="project-item-line1">
-
-            <span
-              class="status-light"
-              [class]="'light-' + p.level"
-            ></span>
-
-            <span class="project-item-name">
-              {{ p.name }}
-            </span>
-
-          </div>
-
-          <div class="project-item-line2">
-            {{ p.status }}
-          </div>
-
-        </li>
-
-      }
-
-    </ul>
-
-  </aside>
+  <!-- 1. 左側專案列表子元件 (已綁定您撰寫的 ProjectList 類別規格) -->
+  <app-projectlist
+    [projects]="projects"
+    [selectedId]="selectedId"
+    (projectSelected)="select($event)"
+  ></app-projectlist>
 
 
   <!-- 右側 Dashboard -->
   <section class="project-dashboard">
+
+    <!-- 麵包屑 -->
+    <nav class="breadcrumb">
+      @for (crumb of breadcrumbs; track $index; let last = $last) {
+        <span class="breadcrumb-item" [class.current]="last">{{ crumb }}</span>
+        @if (!last) {
+          <span class="breadcrumb-sep">\</span>
+        }
+      }
+    </nav>
 
     <!-- Dashboard Header -->
     <header class="dashboard-header">
@@ -94,6 +71,7 @@
     <!-- =================================================
          唯一一個 Dashboard Box Container
          ================================================= -->
+    @if (!viewingTask) {
     <div
       class="dashboard-grid"
       cdkDropList
@@ -141,6 +119,7 @@
                   type="button"
                   class="panel-btn"
                   title="上移"
+                  [disabled]="isFirstVisible('tasks')"
                   (click)="movePanelUp('tasks')"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -153,6 +132,7 @@
                   type="button"
                   class="panel-btn"
                   title="下移"
+                  [disabled]="isLastVisible('tasks')"
                   (click)="movePanelDown('tasks')"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -340,6 +320,7 @@
                   type="button"
                   class="panel-btn"
                   title="上移"
+                  [disabled]="isFirstVisible('gantt')"
                   (click)="movePanelUp('gantt')"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -352,6 +333,7 @@
                   type="button"
                   class="panel-btn"
                   title="下移"
+                  [disabled]="isLastVisible('gantt')"
                   (click)="movePanelDown('gantt')"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -378,6 +360,20 @@
 
 
             <div class="gantt">
+
+              <div class="gantt-row gantt-day-row">
+                <span class="gantt-label"></span>
+                <div class="gantt-track gantt-day-track" [style.grid-template-columns]="'repeat(' + selectedDetail.timelineLength + ', 1fr)'">
+                  @for (d of ganttDays; track $index) {
+                    <span class="gantt-day" [class.is-month-start]="d.getDate() === 1 || $index === 0">
+                      @if (d.getDate() === 1 || $index === 0) {
+                        <span class="gantt-month-tag">{{ d.getMonth() + 1 }} 月</span>
+                      }
+                      {{ d.getDate() }}
+                    </span>
+                  }
+                </div>
+              </div>
 
               @for (t of selectedDetail.tasks; track t.id) {
 
@@ -450,6 +446,7 @@
                   type="button"
                   class="panel-btn"
                   title="上移"
+                  [disabled]="isFirstVisible('discussion')"
                   (click)="movePanelUp('discussion')"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -462,6 +459,7 @@
                   type="button"
                   class="panel-btn"
                   title="下移"
+                  [disabled]="isLastVisible('discussion')"
                   (click)="movePanelDown('discussion')"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -529,7 +527,321 @@
       }
 
     </div>
+    }
+    @else {
+      <!-- 任務內容 Dashboard -->
+      <section class="task-view">
+        <div class="task-view-toolbar">
+          <button type="button" class="btn btn-secondary task-view-back" (click)="closeTaskView()">
+            ← 返回專案儀表板
+          </button>
+
+          <!-- 隱藏 Box 還原 -->
+          <div class="hidden-panels-menu">
+            <select
+              [disabled]="hiddenTaskViewPanels.length === 0"
+              (change)="restoreTaskViewPanel($any($event.target).value)"
+            >
+              <option value="">顯示隱藏 Box...</option>
+              @for (panel of hiddenTaskViewPanels; track panel.id) {
+                <option [value]="panel.id">{{ panel.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div
+          class="dashboard-grid"
+          cdkDropList
+          [cdkDropListData]="visibleTaskViewPanelOrder"
+          (cdkDropListDropped)="dropTaskViewPanel($event)"
+        >
+
+          @for (panelId of visibleTaskViewPanelOrder; track panelId) {
+
+            @if (panelId === 'info') {
+              <section class="panel" cdkDrag>
+                <header class="panel-head">
+            <div
+              class="drag-handle"
+              cdkDragHandle
+              title="拖曳重新排列"
+            >
+              ⠿
+            </div>
+                  <h3 class="panel-title">基本資訊</h3>
+            <div class="panel-actions">
+              <button
+                type="button"
+                class="panel-btn"
+                title="上移"
+                [disabled]="isFirstVisibleTaskView('info')"
+                (click)="moveTaskViewPanelUp('info')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 19V5"></path>
+                  <path d="M6 11l6-6 6 6"></path>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="panel-btn"
+                title="下移"
+                [disabled]="isLastVisibleTaskView('info')"
+                (click)="moveTaskViewPanelDown('info')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5v14"></path>
+                  <path d="M18 13l-6 6-6-6"></path>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="panel-btn panel-close"
+                title="隱藏"
+                (click)="hideTaskViewPanel('info')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12"></path>
+                  <path d="M18 6L6 18"></path>
+                </svg>
+              </button>
+            </div>
+                </header>
+                <div class="panel-body">
+                  <dl class="info-grid">
+                    <div class="info-item">
+                      <dt>任務名稱</dt>
+                      <dd>{{ viewingTask.title }}</dd>
+                    </div>
+                    <div class="info-item">
+                      <dt>負責人</dt>
+                      <dd>{{ viewingTask.assignee }}</dd>
+                    </div>
+                    <div class="info-item">
+                      <dt>狀態</dt>
+                      <dd>
+                        <span class="task-status" [class]="'status-' + viewingTask.status">{{ viewingTask.status }}</span>
+                      </dd>
+                    </div>
+                    <div class="info-item">
+                      <dt>起訖日期</dt>
+                      <dd>{{ taskDateRangeLabel(viewingTask) }}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </section>
+            }
+
+            @if (panelId === 'progress') {
+              <section class="panel" cdkDrag>
+                <header class="panel-head">
+            <div
+              class="drag-handle"
+              cdkDragHandle
+              title="拖曳重新排列"
+            >
+              ⠿
+            </div>
+                  <h3 class="panel-title">目前進度</h3>
+            <div class="panel-actions">
+              <button
+                type="button"
+                class="panel-btn"
+                title="上移"
+                [disabled]="isFirstVisibleTaskView('progress')"
+                (click)="moveTaskViewPanelUp('progress')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 19V5"></path>
+                  <path d="M6 11l6-6 6 6"></path>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="panel-btn"
+                title="下移"
+                [disabled]="isLastVisibleTaskView('progress')"
+                (click)="moveTaskViewPanelDown('progress')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5v14"></path>
+                  <path d="M18 13l-6 6-6-6"></path>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="panel-btn panel-close"
+                title="隱藏"
+                (click)="hideTaskViewPanel('progress')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12"></path>
+                  <path d="M18 6L6 18"></path>
+                </svg>
+              </button>
+            </div>
+                </header>
+                <div class="panel-body">
+                  @if (latestReport(viewingTask); as latest) {
+                    <div class="progress-summary">
+                      <div class="progress-track">
+                        <div class="progress-fill" [style.width.%]="latest.estimatedProgress"></div>
+                      </div>
+                      <span class="progress-percent">{{ latest.estimatedProgress }}%</span>
+                      <span class="report-date">最近回報:{{ latest.reportDate }}</span>
+                    </div>
+                    <p class="report-line"><strong>正進行中部分:</strong>{{ latest.inProgressPart }}</p>
+                    @if (latest.difficulty) {
+                      <p class="report-line difficulty-note"><strong>困難點:</strong>{{ latest.difficulty }}</p>
+                    }
+                  }
+                  @else {
+                    <p class="empty-note">目前沒有進度回報紀錄。</p>
+                  }
+                </div>
+              </section>
+            }
+
+            @if (panelId === 'timeline') {
+              <section class="panel" cdkDrag>
+                <header class="panel-head">
+            <div
+              class="drag-handle"
+              cdkDragHandle
+              title="拖曳重新排列"
+            >
+              ⠿
+            </div>
+                  <h3 class="panel-title">進度回報時間軸</h3>
+            <div class="panel-actions">
+              <button
+                type="button"
+                class="panel-btn"
+                title="上移"
+                [disabled]="isFirstVisibleTaskView('timeline')"
+                (click)="moveTaskViewPanelUp('timeline')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 19V5"></path>
+                  <path d="M6 11l6-6 6 6"></path>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="panel-btn"
+                title="下移"
+                [disabled]="isLastVisibleTaskView('timeline')"
+                (click)="moveTaskViewPanelDown('timeline')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5v14"></path>
+                  <path d="M18 13l-6 6-6-6"></path>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="panel-btn panel-close"
+                title="隱藏"
+                (click)="hideTaskViewPanel('timeline')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12"></path>
+                  <path d="M18 6L6 18"></path>
+                </svg>
+              </button>
+            </div>
+                </header>
+                <div class="panel-body">
+                  @if (viewingTask.reports.length) {
+                    <ul class="report-timeline">
+                      @for (r of reportsNewestFirst(viewingTask); track r.id) {
+                        <li class="report-item">
+                          <div class="report-item-head">
+                            <span class="report-date">{{ r.reportDate }}</span>
+                            <span class="report-progress">{{ r.estimatedProgress }}%</span>
+                          </div>
+                          <p class="report-line"><strong>工作完成部分:</strong>{{ r.completedPart }}</p>
+                          <p class="report-line"><strong>未完成部分:</strong>{{ r.incompletePart }}</p>
+                          <p class="report-line"><strong>正進行中部分:</strong>{{ r.inProgressPart }}</p>
+                          @if (r.difficulty) {
+                            <p class="report-line difficulty-note"><strong>困難點:</strong>{{ r.difficulty }}</p>
+                          }
+                          @if (r.solution) {
+                            <p class="report-line"><strong>解決方案:</strong>{{ r.solution }}</p>
+                          }
+                          @if (r.suggestion) {
+                            <p class="report-line"><strong>建議事項:</strong>{{ r.suggestion }}</p>
+                          }
+                        </li>
+                      }
+                    </ul>
+                  }
+                  @else {
+                    <p class="empty-note">尚無歷史回報紀錄。</p>
+                  }
+                </div>
+              </section>
+            }
+
+          }
+
+        </div>
+      </section>
+    }
 
   </section>
 
 </div>
+
+<!-- 新增/編輯任務彈窗 -->
+@if (showModal) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal-head">
+        <h3>{{ modalMode === 'add' ? '新增任務' : '編輯任務' }}</h3>
+        <button type="button" class="icon-btn" (click)="closeModal()">✕</button>
+      </header>
+
+      <form class="modal-form" (ngSubmit)="saveTask()">
+        <label>
+          任務名稱
+          <input type="text" name="title" [(ngModel)]="formTask.title" required />
+        </label>
+        <label>
+          負責人
+          <input type="text" name="assignee" [(ngModel)]="formTask.assignee" required />
+        </label>
+        <label>
+          狀態
+          <select name="status" [(ngModel)]="formTask.status">
+            @for (s of statusOptions; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </label>
+        <div class="modal-form-row">
+          <label>
+            起始(第幾天)
+            <input type="number" name="startDay" min="1" [(ngModel)]="formTask.startDay" required />
+          </label>
+          <label>
+            結束(第幾天)
+            <input type="number" name="endDay" min="1" [(ngModel)]="formTask.endDay" required />
+          </label>
+        </div>
+
+        <footer class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">取消</button>
+          <button type="submit" class="btn">{{ modalMode === 'add' ? '新增' : '儲存' }}</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}

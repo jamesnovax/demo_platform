@@ -1,3 +1,7 @@
+// 共用面板外觀(.panel / .panel-head / .panel-title / .panel-actions / .panel-btn / .drag-handle 等)
+// 定義在 shared/styles/_panel-toolbar.scss,dashboard.scss 也共用同一份
+@use '../../shared/styles/panel-toolbar';
+
 .projects-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -90,6 +94,24 @@
   gap: 1rem;
 }
 
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #999;
+  padding: 0 0.2rem;
+}
+
+.breadcrumb-item.current {
+  color: #1f2430;
+  font-weight: 600;
+}
+
+.breadcrumb-sep {
+  color: #ccc;
+}
+
 .dashboard-header {
   display: flex;
   align-items: center;
@@ -118,38 +140,7 @@
   gap: 1rem;
 }
 
-.panel {
-  position: relative;
-  border: 1px solid #252b35;
-  border-radius: 4px;
-  background: #ffffff;
-  overflow: hidden;
-}
-
-.panel-head {
-  display: flex;
-  align-items: center;
-  min-height: 36px;
-  padding: 0 10px 0 14px;
-
-  background: #f3f4f6;
-  border-bottom: 1px solid #252b35;
-}
-
-
-.panel-head .panel-title {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: #20242b;
-}
-
-.panel-title {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: #20242b;
-}
+/* .panel / .panel-head / .panel-title 樣式已移到共用檔案 shared/styles/_panel-toolbar.scss */
 
 .btn-add {
   font-size: 0.82rem;
@@ -331,6 +322,36 @@
   display: block;
 }
 
+.gantt-day-row {
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dashed #e2e4ea;
+}
+
+.gantt-day-track {
+  display: grid;
+  height: 18px;
+  align-items: center;
+}
+
+.gantt-day {
+  position: relative;
+  text-align: center;
+  font-size: 0.68rem;
+  color: #999;
+  white-space: nowrap;
+}
+
+.gantt-day.is-month-start {
+  font-weight: 600;
+  color: #555;
+}
+
+.gantt-month-tag {
+  font-size: 0.68rem;
+  margin-right: 1px;
+}
+
 /* 討論節錄 */
 .discussion-list {
   list-style: none;
@@ -379,6 +400,135 @@
 }
 
 /* 新增/編輯任務彈窗 */
+/* 任務內容 Dashboard */
+.task-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.task-view-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.task-view-back {
+  align-self: flex-start;
+}
+
+.panel-body {
+  padding: 12px 14px;
+}
+
+.info-grid {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.info-item dt {
+  font-size: 0.75rem;
+  color: #999;
+  margin-bottom: 0.2rem;
+}
+
+.info-item dd {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1f2430;
+}
+
+.progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.progress-summary .progress-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: #eef0f4;
+  overflow: hidden;
+}
+
+.progress-summary .progress-fill {
+  height: 100%;
+  background: #3a67ff;
+  border-radius: 999px;
+}
+
+.progress-percent {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #3a67ff;
+}
+
+.report-line {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+.report-line strong {
+  color: #1f2430;
+  margin-right: 0.3rem;
+}
+
+.report-line.difficulty-note {
+  color: #b13229;
+}
+
+.report-line.difficulty-note strong {
+  color: #b13229;
+}
+
+.empty-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.report-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.report-item {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #eef0f4;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.report-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.report-item-head .report-date {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.report-progress {
+  font-size: 0.78rem;
+  color: #3a67ff;
+  font-weight: 600;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -455,144 +605,9 @@
 .btn-secondary:hover {
   background: #e4e6ec;
 }
-.panel {
-  position: relative;
-}
 
-.panel-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* .panel-actions / .panel-btn / .drag-handle / .cdk-drag-* 樣式已移到共用檔案 shared/styles/_panel-toolbar.scss */
 
-.panel-title {
-  flex: 1;
-}
-
-.panel-actions {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: auto;
-}
-
-.panel-btn {
-  width: 27px;
-  height: 27px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border: 1px solid #b8bec7;
-  border-radius: 5px;
-
-  background: #ffffff;
-  color: #4b5563;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease;
-}
-/* SVG */
-.panel-btn svg {
-  width: 15px;
-  height: 15px;
-
-  stroke: currentColor;
-  stroke-width: 2;
-  fill: none;
-}
-
-
-.panel-btn:hover {
-  background: #e9edf2;
-  border-color: #737b87;
-  color: #111827;
-}
-.panel-btn:active {
-  transform: translateY(1px);
-}
-.panel-btn.panel-close {
-  color: #6b7280;
-}
-
-.panel-btn.panel-close:hover {
-  background: #fff1f1;
-  border-color: #d66;
-  color: #c62828;
-}
-
-.panel-close {
-  font-size: 20px;
-}
-
-.drag-handle {
-  width: 24px;
-  height: 28px;
-
-  margin-right: 5px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  color: #6b7280;
-  font-size: 17px;
-
-  cursor: grab;
-
-  user-select: none;
-}
-
-
-.drag-handle:hover {
-  color: #252b35;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
-}
-.panel-drag-preview {
-  min-width: 180px;
-  padding: 10px 14px;
-
-  border: 1px solid #252b35;
-  border-radius: 7px;
-
-  background: #ffffff;
-
-  color: #20242b;
-  font-size: 14px;
-  font-weight: 600;
-
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-} 
-
-.cdk-drag-preview {
-  box-sizing: border-box;
-  border-radius: 8px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-}
-
-.cdk-drag-placeholder {
-  opacity: 0.25;
-}
-
-.cdk-drag-animating {
-  transition: transform 180ms ease;
-}
-
-.dashboard-grid.cdk-drop-list-dragging
-.panel:not(.cdk-drag-placeholder) {
-  transition: transform 180ms ease;
-}
 
 .panel > .task-table,
 .panel > .gantt,
@@ -611,8 +626,7 @@
   padding-bottom: 4px;
 }
 .discussion-list {
-  padding-left: 8px;
-  padding-right: 8px;
+  padding: 0.75rem 8px;
 }
 .gantt {
   padding: 8px;

@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
+import { ProjectList } from './projectlist/projectlist';
+
 import {
   CdkDragDrop,
   DragDropModule,
@@ -23,6 +25,18 @@ interface ProjectItem {
   level: StatusLevel;
 }
 
+interface TaskProgressReport {
+  id: number;
+  reportDate: string; // 回報日期(顯示用字串,例如 '9/16')
+  completedPart: string; // 工作完成部分
+  incompletePart: string; // 未完成部分
+  inProgressPart: string; // 正進行中部分
+  difficulty: string; // 困難點
+  solution: string; // 解決方案
+  suggestion: string; // 建議事項
+  estimatedProgress: number; // 預估進度 0-100
+}
+
 interface ProjectTask {
   id: number;
   title: string;
@@ -30,6 +44,7 @@ interface ProjectTask {
   status: TaskStatus;
   startDay: number;
   endDay: number;
+  reports: TaskProgressReport[];
 }
 
 interface DiscussionNote {
@@ -41,6 +56,7 @@ interface DiscussionNote {
 
 interface ProjectDetailData {
   timelineLength: number;
+  startDate: string; // 甘特圖時間軸的起始日期(ISO 格式),第 1 天對應這個日期
   tasks: ProjectTask[];
   discussions: DiscussionNote[];
 }
@@ -56,12 +72,24 @@ interface DashboardPanel {
   visible: boolean;
 }
 
+type TaskViewPanelId =
+  | 'info'
+  | 'progress'
+  | 'timeline';
+
+interface TaskViewPanel {
+  id: TaskViewPanelId;
+  name: string;
+  visible: boolean;
+}
+
 @Component({
   selector: 'app-projects',
   standalone: true,
   imports: [
     FormsModule,
-    DragDropModule
+    DragDropModule,
+    ProjectList
   ],
   templateUrl: './projects.html',
   styleUrl: './projects.scss',
@@ -93,6 +121,7 @@ export class Projects {
 
     1: {
       timelineLength: 20,
+      startDate: '2026-09-01',
 
       tasks: [
         {
@@ -101,7 +130,8 @@ export class Projects {
           assignee: '王冠廷',
           status: '已完成',
           startDay: 1,
-          endDay: 5
+          endDay: 5,
+          reports: []
         },
         {
           id: 2,
@@ -109,7 +139,31 @@ export class Projects {
           assignee: '林柏宇',
           status: '進行中',
           startDay: 4,
-          endDay: 12
+          endDay: 12,
+          reports: [
+            {
+              id: 1,
+              reportDate: '9/8',
+              completedPart: '首頁與專案列表頁的靜態切版已完成',
+              incompletePart: '專案詳情頁、儀表板頁尚未開始',
+              inProgressPart: '正在切專案詳情頁的版面',
+              difficulty: '',
+              solution: '',
+              suggestion: '',
+              estimatedProgress: 30
+            },
+            {
+              id: 2,
+              reportDate: '9/15',
+              completedPart: '專案詳情頁、儀表板頁靜態切版完成',
+              incompletePart: '響應式手機版尚未調整',
+              inProgressPart: '正在處理手機版的版面配置',
+              difficulty: '手機版在窄螢幕下側邊選單會擋住內容',
+              solution: '改用抽屜式選單,窄螢幕時預設收合',
+              suggestion: '建議下次設計稿一開始就附上手機版規格,避免後補',
+              estimatedProgress: 65
+            }
+          ]
         },
         {
           id: 3,
@@ -117,7 +171,8 @@ export class Projects {
           assignee: '黃芷晴',
           status: '進行中',
           startDay: 8,
-          endDay: 16
+          endDay: 16,
+          reports: []
         },
         {
           id: 4,
@@ -125,7 +180,8 @@ export class Projects {
           assignee: '陳雨潔',
           status: '未開始',
           startDay: 16,
-          endDay: 20
+          endDay: 20,
+          reports: []
         },
       ],
 
@@ -153,6 +209,7 @@ export class Projects {
 
     2: {
       timelineLength: 24,
+      startDate: '2026-08-20',
 
       tasks: [
         {
@@ -161,7 +218,8 @@ export class Projects {
           assignee: '陳雨潔',
           status: '已完成',
           startDay: 1,
-          endDay: 4
+          endDay: 4,
+          reports: []
         },
         {
           id: 2,
@@ -169,7 +227,8 @@ export class Projects {
           assignee: '王冠廷',
           status: '已完成',
           startDay: 3,
-          endDay: 10
+          endDay: 10,
+          reports: []
         },
         {
           id: 3,
@@ -177,7 +236,20 @@ export class Projects {
           assignee: '林柏宇',
           status: '延遲',
           startDay: 9,
-          endDay: 22
+          endDay: 22,
+          reports: [
+            {
+              id: 1,
+              reportDate: '8/30',
+              completedPart: '登入、註冊畫面開發完成',
+              incompletePart: '金流串接、訂單畫面尚未開始',
+              inProgressPart: '正在開發金流串接的前端介面',
+              difficulty: '第三方金流 SDK 文件不齊全,測試環境一直串不通',
+              solution: '已請廠商提供最新版文件,並約了技術支援通話',
+              suggestion: '建議之後選金流廠商前,先確認文件與測試環境是否完整',
+              estimatedProgress: 40
+            }
+          ]
         },
         {
           id: 4,
@@ -185,7 +257,8 @@ export class Projects {
           assignee: '黃芷晴',
           status: '進行中',
           startDay: 9,
-          endDay: 20
+          endDay: 20,
+          reports: []
         },
       ],
 
@@ -207,6 +280,7 @@ export class Projects {
 
     3: {
       timelineLength: 16,
+      startDate: '2026-09-08',
 
       tasks: [
         {
@@ -215,7 +289,8 @@ export class Projects {
           assignee: '黃芷晴',
           status: '已完成',
           startDay: 1,
-          endDay: 4
+          endDay: 4,
+          reports: []
         },
         {
           id: 2,
@@ -223,7 +298,8 @@ export class Projects {
           assignee: '陳雨潔',
           status: '進行中',
           startDay: 4,
-          endDay: 10
+          endDay: 10,
+          reports: []
         },
         {
           id: 3,
@@ -231,7 +307,8 @@ export class Projects {
           assignee: '林柏宇',
           status: '未開始',
           startDay: 10,
-          endDay: 16
+          endDay: 16,
+          reports: []
         },
       ],
 
@@ -248,6 +325,7 @@ export class Projects {
   };
 
   selectedId!: number;
+  viewingTask: ProjectTask | null = null;
 
   readonly statusOptions: TaskStatus[] = [
     '未開始',
@@ -294,6 +372,30 @@ export class Projects {
     'discussion'
   ];
 
+  taskViewPanels: TaskViewPanel[] = [
+    {
+      id: 'info',
+      name: '基本資訊',
+      visible: true
+    },
+    {
+      id: 'progress',
+      name: '目前進度',
+      visible: true
+    },
+    {
+      id: 'timeline',
+      name: '進度回報時間軸',
+      visible: true
+    }
+  ];
+
+  taskViewPanelOrder: TaskViewPanelId[] = [
+    'info',
+    'progress',
+    'timeline'
+  ];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router
@@ -309,20 +411,46 @@ export class Projects {
         ? paramId
         : this.projects[0].id;
   }
+   // ⭕ 關鍵修正：將引數 id 的型態放寬為與子元件相同的 string | number
+  select(id: string | number): void {
+    // 強制將傳進來的資料轉化為 number 數字型態
+    const numericId = Number(id);
 
-  select(id: number): void {
-    this.selectedId = id;
+    this.selectedId = numericId;
+    this.viewingTask = null;
 
     this.router.navigate([
       '/projects',
-      id
+      numericId
     ]);
   }
+
+  
 
   get selectedProject(): ProjectItem {
     return this.projects.find(
       p => p.id === this.selectedId
     )!;
+  }
+
+  get breadcrumbs(): string[] {
+    const crumbs = ['專案列表', this.selectedProject.name];
+
+    if (this.viewingTask) {
+      crumbs.push(this.viewingTask.title, '查看');
+      return crumbs;
+    }
+
+    if (this.showModal) {
+      const taskLabel = this.modalMode === 'add' ? '新增任務' : (this.formTask.title || '任務');
+      crumbs.push(taskLabel);
+
+      if (this.modalMode === 'edit') {
+        crumbs.push('編輯');
+      }
+    }
+
+    return crumbs;
   }
 
   get selectedDetail(): ProjectDetailData {
@@ -352,8 +480,55 @@ export class Projects {
     };
   }
 
+  get ganttDays(): Date[] {
+    const total = this.selectedDetail.timelineLength;
+    const start = new Date(this.selectedDetail.startDate);
+    const days: Date[] = [];
+
+    for (let i = 0; i < total; i++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() + i);
+      days.push(d);
+    }
+
+    return days;
+  }
+
   viewTask(task: ProjectTask): void {
-    console.log('查看任務', task);
+    this.viewingTask = task;
+
+    this.taskViewPanels.forEach(
+      panel => (panel.visible = true)
+    );
+    this.taskViewPanelOrder = [
+      'info',
+      'progress',
+      'timeline'
+    ];
+  }
+
+  closeTaskView(): void {
+    this.viewingTask = null;
+  }
+
+  private dateFromDay(day: number): Date {
+    const start = new Date(this.selectedDetail.startDate);
+    const d = new Date(start);
+    d.setDate(d.getDate() + (day - 1));
+    return d;
+  }
+
+  taskDateRangeLabel(task: ProjectTask): string {
+    const fmt = (d: Date) => `${d.getMonth() + 1}/${d.getDate()}`;
+    return `${fmt(this.dateFromDay(task.startDay))} - ${fmt(this.dateFromDay(task.endDay))}`;
+  }
+
+  latestReport(task: ProjectTask): TaskProgressReport | null {
+    return task.reports.length ? task.reports[task.reports.length - 1] : null;
+  }
+
+  reportsNewestFirst(task: ProjectTask): TaskProgressReport[] {
+    return [...task.reports].reverse();
   }
 
   deleteTask(task: ProjectTask): void {
@@ -421,7 +596,8 @@ export class Projects {
 
       list.push({
         id: nextId,
-        ...this.formTask
+        ...this.formTask,
+        reports: []
       });
 
     } else if (
@@ -591,14 +767,147 @@ export class Projects {
     );
   }
 
-  isPanelVisible(panelId: string): boolean {
-    const panel = this.panels.find(p => p.id === panelId);
-    return panel?.visible ?? false;
+  isFirstVisible(id: DashboardPanelId): boolean {
+    return this.visiblePanelOrder[0] === id;
   }
-  get timelineDays(): number[] {
-    return Array.from(
-      { length: this.selectedDetail.timelineLength },
-        (_, index) => index + 1
+
+  isLastVisible(id: DashboardPanelId): boolean {
+    const list = this.visiblePanelOrder;
+    return list[list.length - 1] === id;
+  }
+
+  // ---- 任務內容 Dashboard 的 box(基本資訊/目前進度/進度回報時間軸)----
+  // 邏輯跟上面的 panels/panelOrder 完全對應,只是換一組獨立的狀態
+
+  get hiddenTaskViewPanels(): TaskViewPanel[] {
+    return this.taskViewPanels.filter(
+      panel => !panel.visible
     );
+  }
+
+  get visibleTaskViewPanelOrder(): TaskViewPanelId[] {
+    return this.taskViewPanelOrder.filter(
+      id => {
+        const panel =
+          this.taskViewPanels.find(
+            p => p.id === id
+          );
+
+        return !!panel?.visible;
+      }
+    );
+  }
+
+  hideTaskViewPanel(id: TaskViewPanelId): void {
+    const panel =
+      this.taskViewPanels.find(
+        p => p.id === id
+      );
+
+    if (panel) {
+      panel.visible = false;
+    }
+  }
+
+  restoreTaskViewPanel(id: string): void {
+    if (!id) {
+      return;
+    }
+
+    const panel =
+      this.taskViewPanels.find(
+        p => p.id === id
+      );
+
+    if (panel) {
+      panel.visible = true;
+    }
+  }
+
+  moveTaskViewPanelUp(id: TaskViewPanelId): void {
+    const index =
+      this.taskViewPanelOrder.indexOf(id);
+
+    if (index <= 0) {
+      return;
+    }
+
+    moveItemInArray(
+      this.taskViewPanelOrder,
+      index,
+      index - 1
+    );
+  }
+
+  moveTaskViewPanelDown(id: TaskViewPanelId): void {
+    const index =
+      this.taskViewPanelOrder.indexOf(id);
+
+    if (
+      index < 0 ||
+      index >=
+        this.taskViewPanelOrder.length - 1
+    ) {
+      return;
+    }
+
+    moveItemInArray(
+      this.taskViewPanelOrder,
+      index,
+      index + 1
+    );
+  }
+
+  dropTaskViewPanel(
+    event: CdkDragDrop<TaskViewPanelId[]>
+  ): void {
+    const visibleIds =
+      this.visibleTaskViewPanelOrder;
+
+    const movedId =
+      visibleIds[event.previousIndex];
+
+    const targetId =
+      visibleIds[event.currentIndex];
+
+    if (
+      !movedId ||
+      !targetId ||
+      movedId === targetId
+    ) {
+      return;
+    }
+
+    const fromIndex =
+      this.taskViewPanelOrder.indexOf(
+        movedId
+      );
+
+    const toIndex =
+      this.taskViewPanelOrder.indexOf(
+        targetId
+      );
+
+    if (
+      fromIndex < 0 ||
+      toIndex < 0
+    ) {
+      return;
+    }
+
+    moveItemInArray(
+      this.taskViewPanelOrder,
+      fromIndex,
+      toIndex
+    );
+  }
+
+  isFirstVisibleTaskView(id: TaskViewPanelId): boolean {
+    return this.visibleTaskViewPanelOrder[0] === id;
+  }
+
+  isLastVisibleTaskView(id: TaskViewPanelId): boolean {
+    const list = this.visibleTaskViewPanelOrder;
+    return list[list.length - 1] === id;
   }
 }

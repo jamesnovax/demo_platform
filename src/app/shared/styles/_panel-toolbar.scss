@@ -1,0 +1,177 @@
+// =========================================================
+// 共用面板樣式(Panel / Toolbar)
+// 被 dashboard.scss、projects.scss 用 @use 引入。
+// 任何頁面只要想要跟「專案詳情」一樣的 box 外觀,
+// 都可以在該元件的 .scss 檔案最上方加一行:
+//   @use '相對路徑/shared/styles/panel-toolbar';
+// =========================================================
+
+// ---- 面板外框 ----
+.panel {
+  position: relative;
+  border: 1px solid #252b35;
+  border-radius: 4px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+// ---- 面板標題列 ----
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 10px 0 14px;
+
+  background: #f3f4f6;
+  border-bottom: 1px solid #252b35;
+}
+
+.panel-head .panel-title,
+.panel-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #20242b;
+  flex: 1;
+}
+
+// ---- 標題列右側的操作按鈕群組 ----
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.panel-btn {
+  width: 27px;
+  height: 27px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid #b8bec7;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #4b5563;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.panel-btn svg {
+  width: 15px;
+  height: 15px;
+
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.panel-btn:hover {
+  background: #e9edf2;
+  border-color: #737b87;
+  color: #111827;
+}
+
+.panel-btn:active {
+  transform: translateY(1px);
+}
+
+.panel-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.panel-btn:disabled:hover {
+  background: #ffffff;
+  border-color: #b8bec7;
+  color: #4b5563;
+}
+
+.panel-btn.panel-close {
+  color: #6b7280;
+}
+
+.panel-btn.panel-close:hover {
+  background: #fff1f1;
+  border-color: #d66;
+  color: #c62828;
+}
+
+.panel-close {
+  font-size: 20px;
+}
+
+// ---- 拖曳排序用的把手(只有支援拖曳排序的頁面會用到)----
+.drag-handle {
+  width: 24px;
+  height: 28px;
+
+  margin-right: 5px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #6b7280;
+  font-size: 17px;
+
+  cursor: grab;
+
+  user-select: none;
+}
+
+.drag-handle:hover {
+  color: #252b35;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+// ---- Angular CDK 拖曳排序的視覺效果 ----
+.panel-drag-preview {
+  min-width: 180px;
+  padding: 10px 14px;
+
+  border: 1px solid #252b35;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #20242b;
+  font-size: 14px;
+  font-weight: 600;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.25;
+}
+
+.cdk-drag-animating {
+  transition: transform 180ms ease;
+}
+
+.dashboard-grid.cdk-drop-list-dragging
+.panel:not(.cdk-drag-placeholder) {
+  transition: transform 180ms ease;
+}

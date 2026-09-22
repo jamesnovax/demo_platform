@@ -1,3 +1,7 @@
+// 共用面板外觀(.panel / .panel-head / .panel-title 等)
+// 定義在 shared/styles/_panel-toolbar.scss,projects.scss 也共用同一份
+@use '../../shared/styles/panel-toolbar';
+
 .dash-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -5,27 +9,15 @@
   align-items: start;
 }
 
-.box {
-  background: #fff;
-  border-radius: 10px;
-  padding: 1.1rem 1.3rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+.box-list {
+  padding: 12px 14px;
+  list-style: none;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  min-width: 0;
-}
-
-.box-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.box-head h3 {
-  margin: 0;
-  font-size: 1rem;
-  color: #1f2430;
+  gap: 0.6rem;
+  overflow-y: auto;
+  max-height: 260px;
 }
 
 .box-link {
@@ -41,17 +33,6 @@
 .box-count {
   font-size: 0.8rem;
   color: #888;
-}
-
-.box-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  overflow-y: auto;
-  max-height: 260px;
 }
 
 /* 專案列表 */
@@ -109,7 +90,13 @@
 }
 
 /* 行事曆:月曆格 */
+/* 月曆的 hover popup 需要超出面板邊界顯示,所以這個 box 不能裁切 */
+.box-calendar {
+  overflow: visible;
+}
+
 .month-grid {
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
